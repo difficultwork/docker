@@ -1,0 +1,34 @@
+FROM frr-build:0.0.1 as builder
+
+ADD ./frr-frr-8.1.tar.gz /opt/
+
+WORKDIR /opt/frr-frr-8.1
+RUN ./bootstrap.sh
+RUN ./configure --disable-doc --disable-ripd --disable-ripngd --disable-ospfd --disable-ospf6d \
+--disable-bgpd --disable-ldpd --disable-nhrpd --disable-eigrpd --disable-babeld --disable-watchfrr \
+--disable-pimd --disable-vrrpd --disable-pbrd --enable-sharpd --disable-staticd --disable-bfdd \
+--disable-bgp-announce --disable-bgp-vnc --disable-bgp-bmp --disable-ospfapi --disable-ospfclient \
+--disable-isisd --disable-fabricd --disable-snmp --disable-pimd \
+--bindir=/usr/bin \
+--sbindir=/usr/lib/frr \
+--sysconfdir=/etc/frr \
+--libdir=/usr/lib/frr \
+--libexecdir=/usr/lib/frr \
+--localstatedir=/var/run/frr \
+--with-moduledir=/usr/lib/frr/modules \
+--enable-multipath=64 \
+--enable-user=root \
+--enable-group=root \
+--enable-vty-group=root \
+--enable-fpm \
+--prefix=/usr
+
+RUN make
+RUN make install
+
+FROM frr-run:0.0.1
+
+RUN mkdir /usr/lib/frr
+COPY --from=builder /usr/lib/frr /usr/lib/frr
+
+CMD /usr/lib/frr/zebra
