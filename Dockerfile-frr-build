@@ -1,0 +1,18 @@
+FROM openeuler/openeuler:20.03-lts-sp1
+
+RUN yum clean & yum makecache
+
+RUN yum -y install gcc gcc-c++ make dpkg-devel readline-devel c-ares-devel net-tools autoconf
+RUN yum -y install pcre2-devel automake libtool texinfo net-snmp-devel groff json-c-devel pam-devel bison
+RUN yum -y install flex libcap-devel libunwind-devel cmake
+RUN yum -y install python3-devel 
+
+ADD ./libyang-2.0.88.tar.gz /opt/
+RUN mkdir /opt/libyang-2.0.88/build
+WORKDIR /opt/libyang-2.0.88/build
+RUN cmake -D CMAKE_INSTALL_PREFIX:PATH=/usr -D CMAKE_BUILD_TYPE:String="Release" ..
+RUN make 
+RUN make install
+
+WORKDIR /opt
+RUN rm -r libyang-2.0.88
