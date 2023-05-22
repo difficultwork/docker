@@ -1,0 +1,28 @@
+version: "3.9"
+services:
+  zebra:
+    image: zebra:0.0.1
+    container_name: zebra
+    privileged: true
+    network_mode: host
+    volumes:
+      - "frr:/var/run/frr"
+      - "E:/wsl/frr:/etc/frr"
+
+  bgp:
+    image: bgp:0.0.1
+    container_name: bgp
+    network_mode: host
+    volumes:
+      - "frr:/var/run/frr"
+      - "E:/wsl/conf:/opt/gobgp/conf"
+    depends_on:
+      - zebra
+
+#networks:
+#  host:
+#    external: true
+
+volumes:
+  frr:
+    external: true
