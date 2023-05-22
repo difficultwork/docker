@@ -1,0 +1,19 @@
+FROM openeuler/openeuler:20.03-lts-sp1
+
+RUN yum clean & yum makecache
+
+RUN yum -y install libunwind-devel
+RUN yum -y install gcc gcc-c++ make cmake
+RUN yum -y install pcre2-devel
+RUN yum -y install net-tools
+RUN yum -y install telnet
+
+ADD ./libyang-2.0.88.tar.gz /opt/
+RUN mkdir /opt/libyang-2.0.88/build
+WORKDIR /opt/libyang-2.0.88/build
+RUN cmake -D CMAKE_INSTALL_PREFIX:PATH=/usr -D CMAKE_BUILD_TYPE:String="Release" ..
+RUN make 
+RUN make install
+
+WORKDIR /opt
+RUN rm -r libyang-2.0.88
